@@ -1,11 +1,9 @@
 package tests;
 
-import com.github.javafaker.Faker;
 import data_test.DataTest;
 import io.qameta.allure.Description;
 import io.restassured.response.Response;
 import models.Courier;
-import models.Auth;
 import org.hamcrest.Matchers;
 import org.junit.Test;
 
