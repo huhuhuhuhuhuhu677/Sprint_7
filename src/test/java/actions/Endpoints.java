@@ -5,13 +5,13 @@ public enum Endpoints {
     LOGIN_COURIER("/api/v1/courier/login"),
     ORDERS("/api/v1/orders");
 
-    private final String title;
+    private final String path;
 
-    Endpoints(String title) {
-        this.title = title;
+    Endpoints(String path) {
+        this.path = path;
     }
 
     public String get() {
-        return title;
+        return path;
     }
 }

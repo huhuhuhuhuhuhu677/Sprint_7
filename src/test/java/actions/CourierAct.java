@@ -29,20 +29,31 @@ public class CourierAct {
                 .when()
                 .post(Endpoints.LOGIN_COURIER.get());
     }
+    @Step("Получение ID курьера по логину и паролю")
+    public Integer getCourierId(String login, String password) {
+        Auth auth = new Auth(login, password);
+        Response response = loginCourier(auth);
 
-    //Create
+        if (response.statusCode() == SC_OK) {
+            return response.jsonPath().getInt("id");
+        }
+        return null;
+    }
+
+    @Step("Удаление курьера по ID")
+    public void deleteCourier(Integer courierId) {
+        given()
+                .delete("/api/v1/courier/" + courierId)
+                .then()
+                .statusCode(SC_OK);
+    }
+
+
     @Step("Проверка успешного создания курьера")
     public void checkCourierCreatedSuccessfully(Response response) {
         response.then()
                 .statusCode(SC_CREATED)
                 .body("ok", equalTo(true));
-    }
-
-    @Step("Проверка конфликта при создании курьера")
-    public void checkCourierConflict(Response response) {
-        response.then()
-                .statusCode(SC_CONFLICT)
-                .body("message", equalTo("Этот логин уже используется. Попробуйте другой."));
     }
 
     @Step("Проверка ошибки при неполных данных")
@@ -52,7 +63,6 @@ public class CourierAct {
                 .body("message", equalTo("Недостаточно данных для создания учетной записи"));
     }
 
-    //Login
     @Step("Проверка успешной авторизации курьера")
     public void checkCourierLoginSuccessfully(Response response) {
         response.then()
@@ -73,5 +83,10 @@ public class CourierAct {
                 .statusCode(SC_BAD_REQUEST)
                 .body("message", equalTo("Недостаточно данных для входа"));
     }
-
+    @Step("Проверка конфликта при создании курьера")
+    public void checkCourierConflict(Response response) {
+        response.then()
+                .statusCode(SC_CONFLICT)
+                .body("message", equalTo("Этот логин уже используется"));
+    }
 }

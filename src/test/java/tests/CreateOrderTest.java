@@ -2,6 +2,7 @@ package tests;
 
 import data_test.DataTest;
 import io.qameta.allure.Description;
+import io.qameta.allure.junit4.DisplayName;
 import io.restassured.response.Response;
 import models.Order;
 import org.apache.http.HttpStatus;
@@ -10,7 +11,6 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
 import actions.OrderAct;
-
 import java.util.Arrays;
 import java.util.List;
 
@@ -37,9 +37,9 @@ public class CreateOrderTest extends BaseTest {
     }
 
     @Test
+    @DisplayName("Создание заказа с различными цветами самоката")
     @Description("Создание заказа с различными вариантами цветов")
     public void createOrderWithDifferentColorOptions() {
-        // Arrange
         Order order = new Order(
                 DataTest.getRandomFirstName(),
                 DataTest.getRandomLastName(),
@@ -61,9 +61,9 @@ public class CreateOrderTest extends BaseTest {
     }
 
     @Test
+    @DisplayName("Проверка наличия track в ответе при создании заказа")
     @Description("Тело ответа при создании заказа содержит track")
     public void orderCreationResponseContainsTrack() {
-        // Arrange
         Order order = new Order(
                 DataTest.getRandomFirstName(),
                 DataTest.getRandomLastName(),
@@ -87,9 +87,9 @@ public class CreateOrderTest extends BaseTest {
     }
 
     @Test
+    @DisplayName("Поверка статуса 201 при создании заказа")
     @Description("Создание заказа возвращает код ответа 201")
     public void orderCreationReturnsStatusCode201() {
-        // Arrange
         Order order = new Order(
                 DataTest.getRandomFirstName(),
                 DataTest.getRandomLastName(),

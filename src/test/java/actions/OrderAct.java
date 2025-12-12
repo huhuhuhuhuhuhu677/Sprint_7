@@ -25,6 +25,17 @@ public class OrderAct {
                 .get(Endpoints.ORDERS.get());
     }
 
+    @Step("Отмена заказа по трек-номеру")
+    public void cancelOrder(Integer track) {
+        given()
+                .header("Content-type", "application/json")
+                .body("{\"track\": " + track + "}")
+                .when()
+                .put("/api/v1/orders/cancel")
+                .then()
+                .log().ifError();
+    }
+
     @Step("Проверка успешного создания заказа")
     public void checkOrderCreatedSuccessfully(Response response) {
         response.then()
