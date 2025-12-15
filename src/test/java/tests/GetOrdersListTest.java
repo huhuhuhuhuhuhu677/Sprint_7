@@ -17,20 +17,14 @@ public class GetOrdersListTest extends BaseTest {
     @DisplayName("Получение списка заказов")
     @Description("Проверка статуса кода и структуры ответа при получении списка заказов")
     public void getOrdersListReturnsValidResponse() {
-        // Отправка запроса на получение списка заказов
+
         Response response = orderAct.getOrdersList();
-
-        // Проверка статус-кода 200
         response.then().statusCode(SC_OK);
-
-        // Проверка наличия массива заказов в ответе
         response.then().body("orders", Matchers.notNullValue());
-
-        // Дополнительные проверки структуры ответа (опционально)
         response.then()
-                .body("$", Matchers.hasKey("orders")) // Проверка наличия ключа "orders"
-                .body("orders", Matchers.instanceOf(java.util.List.class)) // Проверка типа
-                .body("pageInfo", Matchers.notNullValue()) // Если есть пагинация
-                .log().body(); // Логирование ответа для отладки
+                .body("$", Matchers.hasKey("orders"))
+                .body("orders", Matchers.instanceOf(java.util.List.class))
+                .body("pageInfo", Matchers.notNullValue())
+                .log().body();
     }
 }

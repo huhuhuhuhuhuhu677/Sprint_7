@@ -40,7 +40,7 @@ public class CreateOrderTest extends BaseTest {
     @DisplayName("Создание заказа с различными цветами самоката")
     @Description("Комплексная проверка создания заказа: статус код, наличие track и корректность данных")
     public void createOrderWithDifferentColorOptions() {
-        // 1. Подготовка тестовых данных
+
         Order order = new Order(
                 DataTest.getRandomFirstName(),
                 DataTest.getRandomLastName(),
@@ -53,25 +53,19 @@ public class CreateOrderTest extends BaseTest {
                 colors
         );
 
-        // 2. Отправка запроса на создание заказа
         Response response = orderAct.createOrder(order);
 
-        // 3. Проверка статус-кода (бывший отдельный тест)
         response.then().statusCode(HttpStatus.SC_CREATED);
 
-        // 4. Проверка наличия track в ответе (бывший отдельный тест)
         response.then()
                 .body("track", Matchers.notNullValue())
                 .body("track", Matchers.instanceOf(Integer.class));
 
-        // 5. Проверка успешного создания заказа через метод orderAct
         orderAct.checkOrderCreatedSuccessfully(response);
 
-        // 6. Сохранение track для последующей очистки
         Integer track = response.jsonPath().getInt("track");
         saveOrderForCleanup(track);
 
-        // 7. Дополнительная проверка: track должен быть положительным числом
         response.then().body("track", Matchers.greaterThan(0));
     }
 }
