@@ -5,6 +5,7 @@ import io.qameta.allure.junit4.DisplayName;
 import io.restassured.response.Response;
 import org.junit.Test;
 import actions.OrderAct;
+import org.hamcrest.Matchers;
 
 import static org.apache.http.HttpStatus.SC_OK;
 
@@ -14,22 +15,22 @@ public class GetOrdersListTest extends BaseTest {
 
     @Test
     @DisplayName("Получение списка заказов")
-    @Description("В тело ответа возвращается список заказов")
-    public void getOrdersListReturnsOrdersArray() {
-
+    @Description("Проверка статуса кода и структуры ответа при получении списка заказов")
+    public void getOrdersListReturnsValidResponse() {
+        // Отправка запроса на получение списка заказов
         Response response = orderAct.getOrdersList();
 
-        response.then()
-                .statusCode(SC_OK)
-                .body("orders", org.hamcrest.Matchers.notNullValue());
-    }
-
-    @Test
-    @DisplayName("Проверка статуса ответа при получении списка заказов")
-    @Description("Ответ содержит корректный код статуса 200")
-    public void getOrdersListReturnsStatusCode200() {
-        Response response = orderAct.getOrdersList();
-
+        // Проверка статус-кода 200
         response.then().statusCode(SC_OK);
+
+        // Проверка наличия массива заказов в ответе
+        response.then().body("orders", Matchers.notNullValue());
+
+        // Дополнительные проверки структуры ответа (опционально)
+        response.then()
+                .body("$", Matchers.hasKey("orders")) // Проверка наличия ключа "orders"
+                .body("orders", Matchers.instanceOf(java.util.List.class)) // Проверка типа
+                .body("pageInfo", Matchers.notNullValue()) // Если есть пагинация
+                .log().body(); // Логирование ответа для отладки
     }
 }

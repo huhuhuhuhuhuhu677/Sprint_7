@@ -44,7 +44,7 @@ public class CreateCourierTest extends BaseTest {
         courierAct.checkCourierConflict(secondResponse);
 
         secondResponse.then()
-                .statusCode(409)  // HTTP/1.1 409 Conflict
+                .statusCode(409)
                 .body("message", Matchers.equalTo("Этот логин уже используется"));
     }
 
@@ -94,7 +94,7 @@ public class CreateCourierTest extends BaseTest {
     }
 
     @Test
-    @DisplayName("Проверка статуса 201 при успешном создании курьера")
+    @DisplayName("Проверка статуса 201 и поля ok: true при успешном создании курьера")
     @Description("Успешный запрос создания курьера возвращает код 201")
     public void successfulCreationReturnsStatusCode201() {
         String login = DataTest.getRandomLogin();
@@ -104,20 +104,10 @@ public class CreateCourierTest extends BaseTest {
 
         saveCourierForCleanup(login, password);
         Response response = courierAct.createCourier(courier);
+
         response.then().statusCode(SC_CREATED);
-    }
-
-    @Test
-    @DisplayName("Проверка поля ok: true при успешном создании курьера")
-    @Description("Успешный запрос создания курьера возвращает ok: true")
-    public void successfulCreationReturnsOkTrue() {
-        String login = DataTest.getRandomLogin();
-        String password = DataTest.getRandomPassword();
-        String firstName = DataTest.getRandomFirstName();
-        Courier courier = new Courier(login, password, firstName);
-
-        saveCourierForCleanup(login, password);
-        Response response = courierAct.createCourier(courier);
         response.then().body("ok", Matchers.equalTo(true));
+        response.then().body("ok", Matchers.notNullValue());
     }
 }
+

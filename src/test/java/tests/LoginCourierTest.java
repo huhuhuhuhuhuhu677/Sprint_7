@@ -44,21 +44,27 @@ public class LoginCourierTest extends BaseTest {
     }
 
     @Test
-    @DisplayName("Авторизация без обязательных полей")
-    @Description("Для авторизации нужно передать все обязательные поля")
-    public void loginRequiresAllMandatoryFields() {
+    @DisplayName("Авторизация без логина")
+    @Description("Для авторизации обязательно нужно передать логин")
+    public void loginRequiresLoginField() {
         Auth authWithoutLogin = new Auth("", password);
-        Response response1 = courierAct.loginCourier(authWithoutLogin);
-        response1.then()
-                .statusCode(400)
-                .body("message", org.hamcrest.Matchers.equalTo("Недостаточно данных для входа"));
-
-        Auth authWithoutPassword = new Auth(login, "");
-        Response response2 = courierAct.loginCourier(authWithoutPassword);
-        response2.then()
+        Response response = courierAct.loginCourier(authWithoutLogin);
+        response.then()
                 .statusCode(400)
                 .body("message", org.hamcrest.Matchers.equalTo("Недостаточно данных для входа"));
     }
+
+    @Test
+    @DisplayName("Авторизация без пароля")
+    @Description("Для авторизации обязательно нужно передать пароль")
+    public void loginRequiresPasswordField() {
+        Auth authWithoutPassword = new Auth(login, "");
+        Response response = courierAct.loginCourier(authWithoutPassword);
+        response.then()
+                .statusCode(400)
+                .body("message", org.hamcrest.Matchers.equalTo("Недостаточно данных для входа"));
+    }
+
 
     @Test
     @DisplayName("Авторизация с неверным паролем")
@@ -67,7 +73,7 @@ public class LoginCourierTest extends BaseTest {
         Auth wrongAuth = new Auth(login, "wrong_password");
         Response response = courierAct.loginCourier(wrongAuth);
         response.then()
-                .statusCode(400)
+                .statusCode(404)
                 .body("message", org.hamcrest.Matchers.equalTo("Учетная запись не найдена"));
     }
 
@@ -78,7 +84,7 @@ public class LoginCourierTest extends BaseTest {
         Auth wrongAuth = new Auth("wrong_login", password);
         Response response = courierAct.loginCourier(wrongAuth);
         response.then()
-                .statusCode(400)
+                .statusCode(404)
                 .body("message", org.hamcrest.Matchers.equalTo("Учетная запись не найдена"));
     }
 
@@ -89,7 +95,7 @@ public class LoginCourierTest extends BaseTest {
         Auth nonExistentAuth = new Auth("non_existent_" + DataTest.getRandomLogin(), "some_password");
         Response response = courierAct.loginCourier(nonExistentAuth);
         response.then()
-                .statusCode(400)
+                .statusCode(404)
                 .body("message", org.hamcrest.Matchers.equalTo("Учетная запись не найдена"));
     }
 
