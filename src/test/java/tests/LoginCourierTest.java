@@ -10,8 +10,6 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
-import static org.apache.http.HttpStatus.SC_OK;
-
 public class LoginCourierTest extends BaseTest {
 
     private String login;
@@ -29,9 +27,8 @@ public class LoginCourierTest extends BaseTest {
         courier = new Courier(login, password, firstName);
         Response createResponse = courierAct.createCourier(courier);
 
-        if (createResponse.statusCode() == SC_OK) {
-            saveCourierForCleanup(login, password);
-        }
+        courierAct.checkCourierCreatedSuccessfully(createResponse);
+        saveCourierForCleanup(login, password);
     }
 
     @Test
@@ -49,9 +46,7 @@ public class LoginCourierTest extends BaseTest {
     public void loginRequiresLoginField() {
         Auth authWithoutLogin = new Auth("", password);
         Response response = courierAct.loginCourier(authWithoutLogin);
-        response.then()
-                .statusCode(400)
-                .body("message", org.hamcrest.Matchers.equalTo("Недостаточно данных для входа"));
+        courierAct.checkInsufficientError(response);
     }
 
     @Test
@@ -60,9 +55,7 @@ public class LoginCourierTest extends BaseTest {
     public void loginRequiresPasswordField() {
         Auth authWithoutPassword = new Auth(login, "");
         Response response = courierAct.loginCourier(authWithoutPassword);
-        response.then()
-                .statusCode(400)
-                .body("message", org.hamcrest.Matchers.equalTo("Недостаточно данных для входа"));
+        courierAct.checkInsufficientError(response);
     }
 
 
@@ -72,9 +65,7 @@ public class LoginCourierTest extends BaseTest {
     public void loginFailsWithWrongPassword() {
         Auth wrongAuth = new Auth(login, "wrong_password");
         Response response = courierAct.loginCourier(wrongAuth);
-        response.then()
-                .statusCode(404)
-                .body("message", org.hamcrest.Matchers.equalTo("Учетная запись не найдена"));
+        courierAct.checkLoginWithWrongPass(response);
     }
 
     @Test
@@ -83,9 +74,7 @@ public class LoginCourierTest extends BaseTest {
     public void loginFailsWithWrongLogin() {
         Auth wrongAuth = new Auth("wrong_login", password);
         Response response = courierAct.loginCourier(wrongAuth);
-        response.then()
-                .statusCode(404)
-                .body("message", org.hamcrest.Matchers.equalTo("Учетная запись не найдена"));
+        courierAct.checkLoginWithWrongPass(response);
     }
 
     @Test
@@ -94,9 +83,7 @@ public class LoginCourierTest extends BaseTest {
     public void loginFailsWithNonExistentUser() {
         Auth nonExistentAuth = new Auth("non_existent_" + DataTest.getRandomLogin(), "some_password");
         Response response = courierAct.loginCourier(nonExistentAuth);
-        response.then()
-                .statusCode(404)
-                .body("message", org.hamcrest.Matchers.equalTo("Учетная запись не найдена"));
+        courierAct.checkLoginWithWrongPass(response);
     }
 
     @Test
@@ -105,10 +92,7 @@ public class LoginCourierTest extends BaseTest {
     public void successfulLoginReturnsCourierId() {
         Auth authData = new Auth(login, password);
         Response response = courierAct.loginCourier(authData);
-        response.then()
-                .statusCode(SC_OK)
-                .body("id", org.hamcrest.Matchers.notNullValue())
-                .body("id", org.hamcrest.Matchers.greaterThan(0));
+        courierAct.checkCourierLoginSuccessfully(response);
     }
 
     @After

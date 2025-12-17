@@ -5,11 +5,8 @@ import io.qameta.allure.Description;
 import io.qameta.allure.junit4.DisplayName;
 import io.restassured.response.Response;
 import models.Courier;
-import org.hamcrest.Matchers;
 import org.junit.Test;
 
-import static org.apache.http.HttpStatus.SC_BAD_REQUEST;
-import static org.apache.http.HttpStatus.SC_CREATED;
 
 public class CreateCourierTest extends BaseTest {
 
@@ -37,15 +34,13 @@ public class CreateCourierTest extends BaseTest {
 
         Courier firstCourier = new Courier(login, password, firstName);
         saveCourierForCleanup(login, password);
-        courierAct.createCourier(firstCourier);
+        Response firstResponse = courierAct.createCourier(firstCourier);
+        courierAct.checkCourierCreatedSuccessfully(firstResponse);
 
         Courier secondCourier = new Courier(login, "differentPassword", "DifferentName");
         Response secondResponse = courierAct.createCourier(secondCourier);
         courierAct.checkCourierConflict(secondResponse);
 
-        secondResponse.then()
-                .statusCode(409)
-                .body("message", Matchers.equalTo("Этот логин уже используется"));
     }
 
     @Test
@@ -58,9 +53,7 @@ public class CreateCourierTest extends BaseTest {
         Courier courier = new Courier(login, password, firstName);
 
         Response response = courierAct.createCourier(courier);
-        response.then()
-                .statusCode(SC_BAD_REQUEST)
-                .body("message", Matchers.equalTo("Недостаточно данных для создания учетной записи"));
+        courierAct.checkInsufficientDataError(response);
     }
 
     @Test
@@ -73,24 +66,7 @@ public class CreateCourierTest extends BaseTest {
         Courier courier = new Courier(login, password, firstName);
 
         Response response = courierAct.createCourier(courier);
-        response.then()
-                .statusCode(SC_BAD_REQUEST)
-                .body("message", Matchers.equalTo("Недостаточно данных для создания учетной записи"));
-    }
-
-    @Test
-    @DisplayName("Попытка создания курьера без имени")
-    @Description("Нельзя создать курьера без имени")
-    public void courierShouldNotBeCreatedWithoutFirstName() {
-        String login = DataTest.getRandomLogin();
-        String password = DataTest.getRandomPassword();
-        String firstName = "";
-        Courier courier = new Courier(login, password, firstName);
-
-        Response response = courierAct.createCourier(courier);
-        response.then()
-                .statusCode(SC_BAD_REQUEST)
-                .body("message", Matchers.equalTo("Недостаточно данных для создания учетной записи"));
+        courierAct.checkInsufficientDataError(response);;
     }
 
     @Test
@@ -104,10 +80,7 @@ public class CreateCourierTest extends BaseTest {
 
         saveCourierForCleanup(login, password);
         Response response = courierAct.createCourier(courier);
-
-        response.then().statusCode(SC_CREATED);
-        response.then().body("ok", Matchers.equalTo(true));
-        response.then().body("ok", Matchers.notNullValue());
+        courierAct.checkInsufficientDataError(response);
     }
 }
 

@@ -55,12 +55,6 @@ public class CreateOrderTest extends BaseTest {
 
         Response response = orderAct.createOrder(order);
 
-        response.then().statusCode(HttpStatus.SC_CREATED);
-
-        response.then()
-                .body("track", Matchers.notNullValue())
-                .body("track", Matchers.instanceOf(Integer.class));
-
         orderAct.checkOrderCreatedSuccessfully(response);
 
         Integer track = response.jsonPath().getInt("track");

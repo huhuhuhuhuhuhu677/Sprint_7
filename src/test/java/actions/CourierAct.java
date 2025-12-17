@@ -34,20 +34,20 @@ public class CourierAct {
         Auth auth = new Auth(login, password);
         Response response = loginCourier(auth);
 
-        if (response.statusCode() == SC_OK) {
+        if (response.getStatusCode() == SC_OK) {
             return response.jsonPath().getInt("id");
         }
         return null;
     }
-
+    //Метод без проверки
     @Step("Удаление курьера по ID")
-    public void deleteCourier(Integer courierId) {
-        given()
+    public Response deleteCourier(Integer courierId) {
+       return given()
                 .delete("/api/v1/courier/" + courierId)
                 .then()
-                .statusCode(SC_OK);
+                .extract()
+                .response();
     }
-
 
     @Step("Проверка успешного создания курьера")
     public void checkCourierCreatedSuccessfully(Response response) {

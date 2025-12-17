@@ -33,7 +33,8 @@ public class OrderAct {
                 .when()
                 .put("/api/v1/orders/cancel")
                 .then()
-                .log().ifError();
+                .extract()
+                .response();
     }
 
     @Step("Проверка успешного создания заказа")
@@ -43,10 +44,12 @@ public class OrderAct {
                 .body("track", notNullValue());
     }
 
-    @Step("Проверка наличия списка заказов в ответе")
-    public void checkOrdersListNotEmpty(Response response) {
-        response.then()
-                .statusCode(SC_OK)
-                .body("orders", notNullValue());
+    @Step("Получение списка заказов с параметрами")
+    public Response getOrdersListWithParams(Integer courierId, Integer limit, Integer page) {
+        return given()
+                .queryParam("courierId", courierId)
+                .queryParam("limit", limit)
+                .queryParam("page", page)
+                .get(Endpoints.ORDERS.get());
     }
 }
